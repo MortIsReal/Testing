@@ -1,0 +1,146 @@
+// Guess the Silly Number Game
+let secretNumber = Math.floor(Math.random() * 20) + 1;
+let guesses = 0;
+
+function checkGuess() {
+    const guess = parseInt(document.getElementById('guessInput').value);
+    const result = document.getElementById('guessResult');
+    const meter = document.getElementById('guessMeter');
+    guesses++;
+    
+    if (guess === secretNumber) {
+        result.textContent = `Woohoo! You got it in ${guesses} tries! The silly number was ${secretNumber}!`;
+        createConfetti();
+        secretNumber = Math.floor(Math.random() * 20) + 1;
+        guesses = 0;
+        meter.style.width = '100%';
+        meter.style.backgroundColor = '#00ff00';
+    } else {
+        const diff = Math.abs(guess - secretNumber);
+        let message, color;
+        if (diff <= 2) {
+            message = "You're sizzling hot!";
+            color = '#ff0000';
+        } else if (diff <= 5) {
+            message = "You're getting warmer!";
+            color = '#ffa500';
+        } else {
+            message = "Brr... you're ice cold!";
+            color = '#0000ff';
+        }
+        result.textContent = message;
+        meter.style.width = `${100 - diff * 5}%`;
+        meter.style.backgroundColor = color;
+    }
+}
+
+// Rock Paper Scissors Lizard Spock Game
+let playerScore = 0;
+let computerScore = 0;
+
+function playRPSLS(playerChoice) {
+    const choices = ['rock', 'paper', 'scissors', 'lizard', 'spock'];
+    const computerChoice = choices[Math.floor(Math.random() * 5)];
+    const result = document.getElementById('rpslsResult');
+    const scoreDisplay = document.getElementById('rpslsScore');
+    
+    const rules = {
+        rock: ['scissors', 'lizard'],
+        paper: ['rock', 'spock'],
+        scissors: ['paper', 'lizard'],
+        lizard: ['paper', 'spock'],
+        spock: ['rock', 'scissors']
+    };
+    
+    if (playerChoice === computerChoice) {
+        result.textContent = `It's a wacky tie! Both chose ${playerChoice}.`;
+    } else if (rules[playerChoice].includes(computerChoice)) {
+        result.textContent = `You win! ${playerChoice} beats ${computerChoice}.`;
+        playerScore++;
+    } else {
+        result.textContent = `You lose! ${computerChoice} beats ${playerChoice}.`;
+        computerScore++;
+    }
+    
+    scoreDisplay.textContent = `Your Score: ${playerScore} | Computer Score: ${computerScore}`;
+    
+    if (playerScore === 5 || computerScore === 5) {
+        const winner = playerScore === 5 ? "You" : "Computer";
+        result.textContent += ` ${winner} won the game!`;
+        createConfetti();
+        playerScore = 0;
+        computerScore = 0;
+    }
+}
+
+// Emoji Memory Madness Game
+let memoryCards = ['😂', '😂', '🤠', '🤠', '🦄', '🦄', '🍕', '🍕', '🚀', '🚀', '🌈', '🌈', '🎸', '🎸', '🍦', '🍦'];
+let flippedCards = [];
+let matchedPairs = 0;
+
+function startMemoryGame() {
+    matchedPairs = 0;
+    memoryCards.sort(() => Math.random() - 0.5);
+    const grid = document.getElementById('memoryGrid');
+    grid.innerHTML = '';
+    
+    for (let i = 0; i < memoryCards.length; i++) {
+        const card = document.createElement('button');
+        card.textContent = '❓';
+        card.setAttribute('data-index', i);
+        card.onclick = flipCard;
+        grid.appendChild(card);
+    }
+    
+    document.getElementById('memoryResult').textContent = '';
+}
+
+function flipCard() {
+    if (flippedCards.length < 2 && !this.classList.contains('matched')) {
+        this.textContent = memoryCards[this.getAttribute('data-index')];
+        flippedCards.push(this);
+        
+        if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 500);
+        }
+    }
+}
+
+function checkMatch() {
+    const [card1, card2] = flippedCards;
+    
+    if (card1.textContent === card2.textContent) {
+        card1.classList.add('matched');
+        card2.classList.add('matched');
+        matchedPairs++;
+        
+        if (matchedPairs === memoryCards.length / 2) {
+            document.getElementById('memoryResult').textContent = 'Woohoo! You matched all the crazy emojis!';
+            createConfetti();
+        }
+    } else {
+        card1.textContent = '❓';
+        card2.textContent = '❓';
+    }
+    
+    flippedCards = [];
+}
+
+function createConfetti() {
+    for (let i = 0; i < 100; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.animationDelay = Math.random() * 5 + 's';
+        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => {
+            confetti.remove();
+        }, 5000);
+    }
+}
+
+// Initialize the Memory Game when the page loads
+startMemoryGame();
+    
